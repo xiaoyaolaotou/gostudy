@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>create</title>
+</head>
+<body>
+<form action="/edit/" method="post">
+    <label>姓名</label><input name="name" value="{{.Name}}"/><br>
+    <input type="hidden" name="id" value="{{.ID}}">
+    <label>性名</label>
+    {{if .Sex}}
+    <input name="sex" type="radio" value="1" checked/>男
+    <input name="sex" type="radio" value="0"/>女
+    {{else}}
+    <input name="sex" type="radio" value="1" />男
+    <input name="sex" type="radio" value="0" checked/>女
+    {{end}}
+    <br>
+    <label>地址</label><input name="addr" value="{{.Addr}}" /><br>
+    <input type="submit" value="更新">
+</form>
+</body>
+</html>
