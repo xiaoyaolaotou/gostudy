@@ -71,7 +71,7 @@ func CreateUser(name, password, birthday, tel, addr, desc string) {
 	}
 	user := User{
 		Name:       name,
-		Password:   password,
+		Password:   utils.Md5(password),
 		Birthday:   birParse,
 		Tel:        tel,
 		Addr:       addr,

@@ -20,7 +20,7 @@ func TaskAction(w http.ResponseWriter, r *http.Request) {
 
 func TaskCreateAction(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		tpl := template.Must(template.New("create_tasks.html").ParseFiles("views/create_tasks.html"))
+		tpl := template.Must(template.New("create.html").ParseFiles("views/create.html"))
 		tpl.Execute(w, nil)
 	} else if r.Method == http.MethodPost {
 		name := r.PostFormValue("name")
@@ -42,7 +42,7 @@ func TaskModifyAction(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				w.WriteHeader(400)
 			}
-			tpl := template.Must(template.New("modify_task.html").ParseFiles("views/modify_task.html"))
+			tpl := template.Must(template.New("modify.html").ParseFiles("views/modify.html"))
 			tpl.Execute(w, task)
 		} else {
 			w.WriteHeader(400)

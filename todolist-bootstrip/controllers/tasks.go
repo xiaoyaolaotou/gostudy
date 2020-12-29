@@ -1,29 +1,30 @@
 package controllers
 
 import (
-	"html/template"
 	"net/http"
 	"strconv"
 	"todolist/models"
+	"todolist/utils"
 )
 
 func TaskAction(w http.ResponseWriter, r *http.Request) {
-	tasks := models.GetTasks()
-	tpl := template.Must(template.New("task.html").ParseFiles("views/task.html"))
-	tpl.Execute(w, tasks)
 
+	tasks := models.GetTasks()
+	//tpl := template.Must(template.New("task.html").ParseFiles("views/task/task.html"))
+	//tpl.Execute(w, tasks)
+	utils.Render(w, "base.html", []string{"views/layouts/base.html", "views/task/task.html"}, tasks)
 }
 
 func TaskCreateAction(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		tpl := template.Must(template.New("create.html").ParseFiles("views/create.html"))
-		tpl.Execute(w, nil)
+		//tpl := template.Must(template.New("create.html").ParseFiles("views/task/create.html"))
+		//tpl.Execute(w, nil)
+		utils.Render(w, "base.html", []string{"views/layouts/base.html", "views/task/create.html"}, nil)
 	} else if r.Method == http.MethodPost {
 		name := r.PostFormValue("name")
 		desc := r.PostFormValue("desc")
 		user := r.PostFormValue("user")
 		models.CreateTask(name, user, desc)
-
 		http.Redirect(w, r, "/", 302)
 	} else {
 		w.WriteHeader(http.StatusMethodNotAllowed)
@@ -38,8 +39,9 @@ func TaskModifyAction(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				w.WriteHeader(400)
 			}
-			tpl := template.Must(template.New("modify.html").ParseFiles("views/modify.html"))
-			tpl.Execute(w, task)
+			//tpl := template.Must(template.New("modify.html").ParseFiles("views/task/modify.html"))
+			//tpl.Execute(w, task)
+			utils.Render(w, "base.html", []string{"views/layouts/base.html", "views/task/modify.html"}, task)
 		} else {
 			w.WriteHeader(400)
 		}
@@ -56,7 +58,10 @@ func TaskModifyAction(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(400)
 		}
 		user := r.PostFormValue("user")
-		status := r.PostFormValue("status")
+		status, err := strconv.Atoi(r.PostFormValue("status"))
+		if err != nil {
+			w.WriteHeader(400)
+		}
 
 		models.ModifyTask(id, name, desc, progress, user, status)
 		http.Redirect(w, r, "/", 302)
@@ -80,4 +85,5 @@ func init() {
 	http.HandleFunc("/tasks/create/", TaskCreateAction)
 	http.HandleFunc("/tasks/modify/", TaskModifyAction)
 	http.HandleFunc("/tasks/delete/", TaskDeleteAction)
+
 }
