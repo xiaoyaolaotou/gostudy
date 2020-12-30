@@ -15,10 +15,10 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
+            <li class='nav-item {{block "nav_users" .}}{{end}}'>
                 <a class="nav-link" href="/users/">用户管理 <span class="sr-only">(current)</span></a>
             </li>
-            <li class="nav-item">
+            <li class='nav-item  {{block "nav_task" .}}{{end}}'>
                 <a class="nav-link" href="/">任务管理</a>
             </li>
 
@@ -32,7 +32,7 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-12">
+        <div class="col-12 m-1">
             {{ block "content" . }}{{.}}}{{ end }}
         </div>
     </div>

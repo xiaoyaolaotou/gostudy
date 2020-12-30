@@ -1,38 +1,40 @@
-
+{{define "nav_task"}}active{{end}}
 {{define "content"}}
 
     <a href="/tasks/create/" class="btn btn-link">添加</a>
-<table class="table table-bordered table-striped table-hover">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>名称</th>
-        <th>进度</th>
-        <th>负责人</th>
-        <th>描述</th>
-        <th>状态</th>
-        <th>操作</th>
-    </tr>
-    </thead>
-    <tbody>
-    {{ range . }}
-        <tr>
-            <td>{{ .ID }}</td>
-            <td>{{ .Name }}</td>
-            <td>{{ .Progress }}</td>
-            <td>{{ .User }}</td>
-            <td>{{ .Desc }}</td>
-            <td>{{ .Status }}</td>
-            <td>
-                <a class="btn btn-warning btn-sm" href="/tasks/modify/?id={{ .ID }}">修改</a>
-                <a class="btn btn-danger btn-sm" href="/tasks/delete/?id={{ .ID }}"> 删除</a>
-            </td>
-        </tr>
-    {{ else }}
-        <tr>
-            <td colspan="7"> 无数据 </td>
-        </tr>
-    {{ end }}
-    </tbody>
-</table>
+    <div class="mt-0">
+        <table class="table table-bordered table-striped table-hover">
+            <thead>
+            <tr>
+                <th scope="col-1">ID</th>
+                <th scope="col">名称</th>
+                <th scope="col">进度</th>
+                <th scope="col">负责人</th>
+                <th scope="col">描述</th>
+                <th scope="col">状态</th>
+                <th scope="col-1">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{ range . }}
+                <tr>
+                    <td>{{ .ID }}</td>
+                    <td>{{ .Name }}</td>
+                    <td>{{ .Progress }}</td>
+                    <td>{{ .User }}</td>
+                    <td>{{ .Desc }}</td>
+                    <td>{{ .Status }}</td>
+                    <td>
+                        <a class="btn btn-warning btn-sm" href="/tasks/modify/?id={{ .ID }}">修改</a>
+                        <a class="btn btn-danger btn-sm" href="/tasks/delete/?id={{ .ID }}"> 删除</a>
+                    </td>
+                </tr>
+            {{ else }}
+                <tr>
+                    <td colspan="7"> 无数据</td>
+                </tr>
+            {{ end }}
+            </tbody>
+        </table>
+    </div>
 {{end}}
