@@ -1,0 +1,89 @@
+#!/usr/bin/python env
+# -*- coding: utf-8 -*-
+import os, sys, paramiko, time
+
+date = time.strftime("%Y%m%d%H%M%S", time.localtime())
+
+
+class Connection(object):
+    def __init__(self, ip, user, remote_file, port=22, key='/root/.ssh/id_rsa'):
+        self.ip = ip
+        self.user = user
+        self.port = int(port)
+        self.remote_file = remote_file
+        self.private_key = paramiko.RSAKey.from_private_key_file(key)
+        self.client = paramiko.SSHClient()
+        self.client.load_system_host_keys()
+        self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy)
+        self.client.connect(hostname=self.ip,
+                            port=self.port,
+                            username=self.user,
+                            pkey=self.private_key)
+        self.transport = self.client.get_transport()
+        self.sftp = paramiko.SFTPClient.from_transport(self.transport)
+
+    def downlowd(self):
+
+        print "========download Application==========="
+        if sys.argv[1] == "site":
+            os.system(
+                "cd /opt/o2m_gsr_700_test && svn checkout  http://10.128.46.28/rss/O2M1114120001/04_软件实现/o2m700/GSR/site")
+
+    def mvn(self):
+        print "=======mvn Application================="
+        if sys.argv[1] == "site":
+            os.system("cd /opt/o2m_gsr_700_test/site &&  mvn clean install -Dmaven.test.skip=true")
+
+    def upload(self, local_dir):
+        self.sftp.put(local_dir, self.remote_file)
+
+    def Backup(self, backup_cmd):
+        print "==========backup application==========="
+        stdin, stdout, stderr = self.client.exec_command(backup_cmd)
+        result = stderr.read()
+        error = stderr.read()
+        if not error:
+            print "host:%s 正在备份" % self.ip
+        else:
+            print error
+
+    def stop(self, cmd):
+        print "========stop application============"
+        stdin, stdout, stderr = self.client.exec_command(cmd)
+        result = stderr.read()
+        error = stderr.read()
+        if not error:
+            print "host:%s 该应用已停止" % self.ip
+        else:
+            print error
+
+    def start(self, cmd):
+        print "=======start application============="
+        stdin, stdout, stderr = self.client.exec_command(cmd)
+        result = stderr.read()
+        error = stderr.read()
+        if not error:
+            print "host:%s 该应用已启动." % self.ip
+        else:
+            print error
+
+    def __del__(self):
+        self.client.close()
+
+
+if __name__ == "__main__":
+    ip = ['10.128.31.59', '10.128.31.60']
+    user = 'o2muser'
+    filename = "site-0.0.1-SNAPSHOT.jar"
+    remote = '/home/o2muser/gome/site/%s' % filename
+    remote1 = '/home/o2muser/gome/site/'
+
+    if sys.argv[1] == "site":
+        for i in ip:
+            r = Connection(i, user, remote)
+            r.downlowd()
+            r.mvn()
+            r.stop("ps -ef | grep site-0.0.1-SNAPSHOT.jar | grep -v grep | awk '{print $2}'|xargs kill -9")
+            r.Backup("mv %s %s" % (remote, remote + date))
+            r.upload("/opt/o2m_gsr_700_test/site/target/site-0.0.1-SNAPSHOT.jar")
+            r.start("java -jar -Xms30720m -Xmx30720m -Xmn16348m -Xss3072k -XX:MetaspaceSize=256m -XX:MaxMetaspaceSize=512m /home/o2muser/gome/site/site-0.0.1-SNAPSHOT.jar --spring.profiles.active=700 >/dev/null &")
